@@ -17,7 +17,7 @@ class MarketManager extends StatelessWidget {
     return MaterialApp(
       title: 'Market Manager',
       theme: themes.lightTheme,
-      darkTheme: themes.lightTheme,
+      darkTheme: themes.darkTheme,
       themeMode: ThemeMode.system,
 
       initialRoute: HomeScreen.id,

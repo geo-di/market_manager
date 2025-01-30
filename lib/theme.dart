@@ -1,41 +1,57 @@
 import 'package:flutter/material.dart';
+import 'constants.dart';
 
 final ThemeData lightTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.lightBlueAccent,
-    primary: Colors.lightBlueAccent,
+    seedColor: kPrimaryLightColor,
+    primary: kPrimaryLightColor,
     brightness: Brightness.light,
-    surface: Color(0xFFF5F5F5)
+    surface: kAppWhite
   ),
   useMaterial3: true,
   appBarTheme: AppBarTheme(
     elevation: 5,
     shadowColor: Colors.black,
-    backgroundColor: Color(0xFF1976D2),
-    foregroundColor: Color(0xFFF5F5F5),
+    backgroundColor: kLightAppBarBackground,
+    foregroundColor: kAppWhite,
+    iconTheme: IconThemeData(
+        color: kAppWhite
+    ),
 
   ),
   textTheme: TextTheme(
     bodyMedium: TextStyle(
-      color: Color(0xFFF5F5F5)
-    )
+      color: kAppWhite
+    ),
   ),
   iconTheme: IconThemeData(
-    color: Color(0xFFF5F5F5)
+    color: kAppWhite
   )
 );
 
 final ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.blueAccent.shade700,
-    primary: Colors.blueAccent.shade700,
+    seedColor: kPrimaryDarkColor,
+    primary: kPrimaryDarkColor,
     brightness: Brightness.dark,
-    surface: Color(0xFF0A0E21),
+    surface: kDarkBackground,
   ),
   useMaterial3: true,
   appBarTheme: AppBarTheme(
     elevation: 5,
     shadowColor: Colors.black,
-    backgroundColor: Color(0xFF1E1E1E),
+    backgroundColor: kDarkAppBarBackground,
+    foregroundColor: kAppWhite,
+    iconTheme: IconThemeData(
+        color: kAppWhite
+    )
   ),
+    textTheme: TextTheme(
+        bodyMedium: TextStyle(
+            color: kAppWhite
+        )
+    ),
+    iconTheme: IconThemeData(
+        color: kAppWhite
+    )
 );

@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:market_manager/components/rounded_button.dart';
 import 'package:market_manager/constants.dart';
 import 'package:market_manager/screens/menu_screen.dart';
+import 'package:market_manager/utilities.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Icon(
                         FontAwesomeIcons.cartShopping,
                         size: 60,
-                        color: Colors.lightBlueAccent,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -60,12 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.transparent,
                         child: Text(
                           'Market Manager',
-                          style: TextStyle(
-                            color: Colors.lightBlueAccent,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 25,
-
-                          ),
+                          style: kAnimatedTitleDecoration(context).copyWith(fontSize: 25),
                         ),
                       ),
                   ),
@@ -82,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onChanged: (value) {
                 email = value;
               },
-              decoration: kTextFieldDecoration.copyWith(
+              decoration: kTextFieldDecoration(context).copyWith(
                   hintText: 'Enter your email'
               ),
             ),
@@ -96,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onChanged: (value) {
                 password = value;
               },
-              decoration: kTextFieldDecoration.copyWith(
+              decoration: kTextFieldDecoration(context).copyWith(
                   hintText: 'Enter your password'
               ),
             ),
@@ -105,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             RoundedButton(
               title: 'Log In',
-              color: Colors.lightBlueAccent,
+              color: Theme.of(context).colorScheme.primary,
               onPressed: () async {
                 try {
                   final user = await _auth.signInWithEmailAndPassword(
@@ -113,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: password
                   );
                   if (user != null) {
+                    Util.closeKeyboard(context);
                     Navigator.pushNamed(context, MenuScreen.id);
                   }
                 } on FirebaseAuthException catch (e) {
