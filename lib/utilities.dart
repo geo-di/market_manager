@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:market_manager/screens/login_screen.dart';
 
 class Util {
 
@@ -30,4 +33,50 @@ class Util {
   static closeKeyboard(BuildContext context) {
     FocusScope.of(context).requestFocus(FocusNode());
   }
+
+
+  static getCurrentUser(FirebaseAuth auth, BuildContext context) {
+    if (auth.currentUser != null) {
+      debugPrint('Current user: ${auth.currentUser?.email}');
+      return auth.currentUser;
+    } else {
+      Navigator.of(context).pushReplacementNamed(LoginScreen.id);
+      return null;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getCategories(FirebaseFirestore firestore, String store) async {
+    final snapshot = await firestore
+        .collection('stores')
+        .doc(store)
+        .collection('categories')
+        .get();
+
+    final categoryMaps = snapshot.docs.map((doc) {
+      return {
+        'uid': doc.id,
+        'name': doc.data()['name'],
+      };
+    }).toList();
+
+    return categoryMaps;
+  }
+
+  static Future<List<Map<String, dynamic>>> getSuppliers(FirebaseFirestore firestore, String store) async {
+    final snapshot = await firestore
+        .collection('stores')
+        .doc(store)
+        .collection('suppliers')
+        .get();
+
+    final supplierMaps = snapshot.docs.map((doc) {
+      return {
+        'uid': doc.id,
+        'name': doc.data()['name'],
+      };
+    }).toList();
+
+    return supplierMaps;
+  }
+
 }

@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:market_manager/components/date_circle.dart';
 import 'package:market_manager/components/exit_alert.dart';
 import 'package:market_manager/components/icon_content.dart';
 import 'package:market_manager/components/reusable_card.dart';
 import 'package:market_manager/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:market_manager/screens/add_product_screen.dart';
+import 'package:market_manager/screens/barcode_scanner_screen.dart';
+import 'package:market_manager/screens/chat_screen.dart';
 import 'package:market_manager/utilities.dart';
 
 late User loggedInUser;
@@ -36,20 +40,15 @@ class _MenuScreenState extends State<MenuScreen> {
 
   }
 
-  void getCurrentUser() async {
-    if(_auth.currentUser != null){
-      print(_auth.currentUser?.email);
-      loggedInUser = _auth.currentUser!;
-    } else {
-      Navigator.pop(context);
-    }
-  }
+
 
   @override
   void dispose() {
     super.dispose();
 
+    //TODO move this to _showBackDialog
     _auth.signOut();
+    Hive.box('session').clear();
   }
 
   @override
@@ -57,7 +56,7 @@ class _MenuScreenState extends State<MenuScreen> {
     super.initState();
 
     getDate();
-    getCurrentUser();
+    loggedInUser = Util.getCurrentUser( _auth, context);
   }
 
   Future<bool?> _showBackDialog() {
@@ -83,7 +82,7 @@ class _MenuScreenState extends State<MenuScreen> {
       child: Scaffold(
         //TODO add functionality on settings
         appBar: AppBar(
-          title: Text('Hello ${loggedInUser.email}!'),
+          title: Text('Hello ${loggedInUser.displayName}!'),
           actions: [
             IconButton(onPressed: (){}, icon: Icon(Icons.settings))
           ],
@@ -112,6 +111,9 @@ class _MenuScreenState extends State<MenuScreen> {
                         ),
                       ],
                     ),
+                    onPress: () {
+                      //TODO go to calendar
+                    },
                   ),
                 ],
               ),
@@ -126,14 +128,18 @@ class _MenuScreenState extends State<MenuScreen> {
                           icon: Icons.chat_rounded,
                           label: 'Chat'
                       ),
-                      onPress: (){}
+                      onPress: (){
+                        Navigator.pushNamed(context, ChatScreen.id);
+                      }
                   ),
                   ReusableCard(
                       cardChild: IconContent(
                           icon: FontAwesomeIcons.plus,
                           label: 'Add product'
                       ),
-                      onPress: (){}
+                      onPress: (){
+                        Navigator.pushNamed(context, BarcodeScannerScreen.id, arguments: {'destinationPage': AddProductScreen.id} );
+                      }
                   ),
                 ],
               ),
@@ -148,14 +154,18 @@ class _MenuScreenState extends State<MenuScreen> {
                           icon: FontAwesomeIcons.searchengin,
                           label: 'Search product'
                       ),
-                      onPress: (){}
+                      onPress: (){
+                        //TODO go to search product
+                      }
                   ),
                   ReusableCard(
                       cardChild: IconContent(
                           icon: FontAwesomeIcons.listCheck,
                           label: 'Show stock'
                       ),
-                      onPress: (){}
+                      onPress: (){
+                        //TODO go to show stock
+                      }
                   ),
                 ],
               ),
@@ -171,7 +181,10 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ],
-                )
+                ),
+              onPress: () {
+                  //TODO go to make sale
+              },
             )
           ],
         ),

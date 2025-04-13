@@ -1,10 +1,18 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:market_manager/components/rounded_button.dart';
+import 'package:market_manager/components/set_name_alert.dart';
 import 'package:market_manager/constants.dart';
 import 'package:market_manager/screens/menu_screen.dart';
 import 'package:market_manager/utilities.dart';
+
+
+final _firestore = FirebaseFirestore.instance;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,6 +33,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  Future<String?> _showSetDisplayNameDialog() {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => SetNameAlert(),
+    );
+  }
+
+  @override
+  void initState() {
+    // TODO: check local db if user exists skip login
+    super.initState();
+
+    _emailController.clear();
+    _passwordController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 email = value;
               },
               decoration: kTextFieldDecoration(context).copyWith(
-                  hintText: 'Enter your email'
+                  labelText: 'Enter your email'
               ),
             ),
             SizedBox(
@@ -93,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 password = value;
               },
               decoration: kTextFieldDecoration(context).copyWith(
-                  hintText: 'Enter your password'
+                labelText: 'Password',
               ),
             ),
             SizedBox(
@@ -104,13 +128,49 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Theme.of(context).colorScheme.primary,
               onPressed: () async {
                 try {
-                  final user = await _auth.signInWithEmailAndPassword(
+                  final userCredential = await _auth.signInWithEmailAndPassword(
                       email: email,
                       password: password
                   );
+
+                  User? user = userCredential.user;
+
                   if (user != null) {
                     Util.closeKeyboard(context);
-                    Navigator.pushNamed(context, MenuScreen.id);
+
+                    if (user.displayName == null || user.displayName!.isEmpty) {
+                      String? newDisplayName = await _showSetDisplayNameDialog();
+
+                      if (newDisplayName != null && newDisplayName.isNotEmpty) {
+                        await user.updateDisplayName(newDisplayName);
+                        await user.reload();
+
+                        await _firestore.collection('user').doc(user.uid).update({
+                          'name': user.displayName,
+                        });
+                      } else {
+                        return;
+                      }
+                    }
+                    final docSnapshot = await _firestore.collection('users').doc(user.uid).get();
+
+                    if (docSnapshot.exists) {
+                      final data = docSnapshot.data();
+                      final String store = data?['store'];
+
+                      final storeBox = Hive.box('session');
+                      storeBox.put('store', store);
+
+                      debugPrint(store);
+                      debugPrint(Hive.box('session').get('store'));
+
+
+                      Navigator.pushNamed(context, MenuScreen.id);
+                    } else {
+                      debugPrint('error getting data');
+                    }
+
+
                   }
                 } on FirebaseAuthException catch (e) {
                   print("Firebase Auth Error: ${e.message}");
