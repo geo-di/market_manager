@@ -9,7 +9,7 @@ import 'package:market_manager/components/message_bubble.dart';
 
 final _firestore = FirebaseFirestore.instance;
 late User loggedInUser;
-late final String _sessionStore;
+String? _sessionStore;
 
 class ChatScreen extends StatefulWidget {
 
@@ -30,7 +30,9 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     loggedInUser = Util.getCurrentUser(_auth, context);
-    _sessionStore = Hive.box('session').get('store');
+    if(_sessionStore==null){
+      _sessionStore = Hive.box('session').get('store');
+    }
   }
 
   @override
