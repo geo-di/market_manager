@@ -120,11 +120,231 @@ class _AddProductScreenState extends State<AddProductScreen> {
       body: this.isLoading
           ? const Center(child: CircularProgressIndicator())
         : this.barcodeAlreadyExists
-          ? Text('Barcode exists') //TODO implement this
+          ? addExistingProduct(context)
           : addProductFirstTime(context),
       );
     }
 
+  Padding addExistingProduct(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          children: [
+
+            const SizedBox(height: 16),
+
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).textTheme.bodySmall!.color!),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Text(
+                barcode != null ? 'Product with barcode $barcode is being updated' : 'No barcode',
+                style: kSubtitleTextDecoration,
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            NumericInputField(
+              label: 'Quantity',
+              isInt: true,
+              initialValue: quantity,
+              onChanged: (value) => quantity = int.tryParse(value!),
+              validator: (value) => value!.isEmpty ? 'Enter quantity' : null,
+            ),
+
+            const SizedBox(height: 16),
+
+            DropdownButtonFormField<String>(
+              decoration: kTextFieldDecoration(context).copyWith(
+                  labelText: 'Supplier'
+              ),
+              items: suppliers
+                  .map((sup) => DropdownMenuItem(value: sup, child: Text(sup)))
+                  .toList(),
+              validator: (value) => value == null ? 'Select supplier' : null,
+              onChanged: (value) {
+                final selectedMap = supplierMaps!.firstWhere((sup) => sup['name'] == value);
+                supplier = selectedMap['uid'];
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            NumericInputField(
+              label: 'Price',
+              isInt: false,
+              validator: (value) => value!.isEmpty ? 'Enter price' : null,
+              onChanged: (value) => price = double.tryParse(value),
+            ),
+
+            const SizedBox(height: 16),
+
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  hasDiscount = !hasDiscount;
+                  discount1 = 0;
+                  discount2 = 0;
+                });
+              },
+              child: Row(
+                children: [
+                  Text('Does the product have a discount?'),
+                  Checkbox(
+                    value: hasDiscount,
+                    onChanged: (newValue) {
+                      setState(() {
+                        hasDiscount = newValue ?? false;
+                        discount1 = 0;
+                        discount2 = 0;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            if(hasDiscount)
+
+              Column(
+                children: [
+                  const SizedBox(height: 16),
+
+                  NumericInputField(
+                    label: '1st Discount',
+                    isInt: false,
+                    validator: (value) {
+                      final parsed = double.tryParse(value ?? '');
+
+                      if ((value == null || value.isEmpty || parsed == 0) && hasDiscount) {
+                        return 'Enter first discount';
+                      }
+
+                      if (parsed != null && (parsed < 0 || parsed > 100)) {
+                        return 'Discount must be between 0 and 100';
+                      }
+
+                      return null;
+                    },
+                    onChanged: (value) => discount1 = double.tryParse(value) ?? 0,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  NumericInputField(
+                    label: '2nd Discount',
+                    isInt: false,
+                    validator: (value) {
+                      final parsed = double.tryParse(value ?? '');
+
+                      if (parsed != null && (parsed < 0 || parsed > 100)) {
+                        return 'Discount must be between 0 and 100';
+                      }
+
+                      return null;
+                    },
+                    onChanged: (value) => discount2 = double.tryParse(value) ?? 0,
+
+                  ),
+                ],
+              ),
+
+
+
+
+            const SizedBox(height: 24),
+
+
+
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+
+                  DocumentSnapshot snapshot = await _firestore
+                      .collection('stores')
+                      .doc(_sessionStore)
+                      .collection('products')
+                      .doc(barcode)
+                      .get();
+
+                  if (snapshot.exists) {
+                    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+                    double oldPrice = (data['price'] ?? 0).toDouble();
+                    int oldQuantity = data['quantity'];
+
+                    final productData = {
+                      'price': ((((price! - price! * discount1/100) - price! * discount2/100)*quantity! + oldPrice * oldQuantity) / (quantity! + oldQuantity)  * 100).round() / 100,
+                      'quantity': quantity! + oldQuantity,
+                      'original_quantity': quantity! + oldQuantity,
+                      'stock_ratio': 1,
+                    };
+
+                    final historyData = {
+                      'quantity': quantity,
+                      'price': price,
+                      'supplierId': supplier,
+                      'discount1': hasDiscount ? discount1 : 0,
+                      'discount2': hasDiscount ? discount2 : 0,
+                      'createdAt': FieldValue.serverTimestamp(),
+                    };
+
+
+                    try {
+                      await _firestore
+                          .collection('stores')
+                          .doc(_sessionStore)
+                          .collection('products')
+                          .doc(barcode)
+                          .update(productData);
+
+                      await _firestore
+                          .collection('stores')
+                          .doc(_sessionStore)
+                          .collection('products')
+                          .doc(barcode)
+                          .collection('history')
+                          .add(historyData);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Product updated successfully')),
+                      );
+
+                      Navigator.pop(context);
+
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error updating product: $e')),
+                      );
+                    }
+
+                  }
+
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                    Theme.of(context).appBarTheme.backgroundColor
+                ),
+              ),
+              child: Text(
+                'Update Product Stock',
+                style: TextStyle(
+                    color: kAppWhite
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
     
     
   Padding addProductFirstTime(BuildContext context) {
@@ -134,6 +354,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
           key: _formKey,
           child: ListView(
             children: [
+
+              const SizedBox(height: 16),
+
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).textTheme.bodySmall!.color!),
+                  borderRadius: BorderRadius.circular(32),
+                ),
+                child: Text(
+                  barcode != null ? 'Product with barcode $barcode is being added first time' : 'No barcode',
+                  style: kSubtitleTextDecoration,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
 
               const SizedBox(height: 16),
 
@@ -196,10 +431,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 validator: (value) => value!.isEmpty ? 'Enter price' : null,
                 onChanged: (value) => price = double.tryParse(value!),
               ),
-
-              const SizedBox(height: 16),
-
-              Text(barcode != null ? 'Scanned: $barcode' : 'No barcode'),
 
               const SizedBox(height: 16),
 
@@ -269,13 +500,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                     final productData = {
                       'name': name,
-                      'price': price,
+                      'price': (((price! - price! * discount1/100) - price! * discount2/100) * 100).round() / 100,
                       'quantity': quantity,
                       'categoryId': category,
+                      'original_quantity': quantity,
+                      'stock_ratio': 1,
+                      'track_stock': true,
 
                     };
 
                     final historyData = {
+                      'quantity': quantity,
                       'price': price,
                       'supplierId': supplier,
                       'discount1': hasDiscount ? discount1 : 0,
@@ -313,7 +548,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     }
                   }
                 },
-                child: const Text('Save Product'),
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(
+                        Theme.of(context).appBarTheme.backgroundColor
+                    ),
+                ),
+                child: Text(
+                  'Add Product',
+                  style: TextStyle(
+                    color: kAppWhite
+                  ),
+                ),
               ),
             ],
           ),
