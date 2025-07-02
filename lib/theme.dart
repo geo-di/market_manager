@@ -21,7 +21,10 @@ final ThemeData lightTheme = ThemeData(
   ),
   textTheme: TextTheme(
     bodyMedium: TextStyle(
-      color: kAppWhite
+      color: kAppBlack
+    ),
+    bodySmall: TextStyle(
+        color: kAppBlack
     ),
   ),
   iconTheme: IconThemeData(
@@ -47,9 +50,12 @@ final ThemeData darkTheme = ThemeData(
     )
   ),
     textTheme: TextTheme(
-        bodyMedium: TextStyle(
-            color: kAppWhite
-        )
+      bodyMedium: TextStyle(
+          color: kAppWhite
+      ),
+      bodySmall: TextStyle(
+        color: kAppWhite
+      ),
     ),
     iconTheme: IconThemeData(
         color: kAppWhite

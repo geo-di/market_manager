@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 final kPrimaryLightColor = Colors.lightBlueAccent;
-final kPrimaryDarkColor = Colors.blueAccent.shade400;
+final kPrimaryDarkColor = Color(0xFF051660);
 final kAppWhite = Color(0xFFF5F5F5);
 final kAppBlack = Colors.black87;
 final kLightAppBarBackground = Color(0xFF1976D2);
@@ -65,4 +65,5 @@ BoxDecoration kMessageContainerDecoration(BuildContext context) {
     ),
   );
 }
+
 
