@@ -26,7 +26,9 @@ class IconContent extends StatelessWidget {
         ),
         Text (
           label,
-          style: kSubtitleTextDecoration,
+          style: kSubtitleTextDecoration.copyWith(
+            color: kAppWhite,
+          ),
         ),
       ],
     );
