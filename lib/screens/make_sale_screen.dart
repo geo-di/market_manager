@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:market_manager/components/exit_alert.dart';
+import 'package:market_manager/components/rounded_button.dart';
 import 'package:market_manager/screens/barcode_scanner_screen.dart';
 import 'package:market_manager/utilities.dart';
 
@@ -83,8 +85,8 @@ class _MakeSaleScreenState extends State<MakeSaleScreen> {
   Future<void> _showProductConfirmationDialog() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Confirm Product'),
+      builder: (_) => ReusableDialog(
+        title: 'Confirm Product',
         content: Text('Product: $name\nBarcode: $barcode\nStock: $quantity'),
         actions: [
           TextButton(
@@ -146,11 +148,12 @@ class _MakeSaleScreenState extends State<MakeSaleScreen> {
                   },
                 ),
                 SizedBox(height: 10),
-                ElevatedButton(
+                RoundedButton(
+                  title: 'Confirm Sale',
+                  color: Theme.of(context).colorScheme.primary,
                   onPressed: () {
                     _processSale();
                   },
-                  child: Text('Confirm Sale'),
                 ),
               ],
             ),
@@ -195,8 +198,8 @@ class _MakeSaleScreenState extends State<MakeSaleScreen> {
   Future<void> _showAnotherSaleDialog() async {
     final doAnother = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Sale Complete'),
+      builder: (_) => ReusableDialog(
+        title: 'Sale Complete',
         content: Text('Do you want to process another product?'),
         actions: [
           TextButton(

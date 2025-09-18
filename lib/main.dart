@@ -15,7 +15,6 @@ import 'package:market_manager/screens/show_tasks_screen.dart';
 import 'package:market_manager/theme.dart' as themes;
 
 import 'package:hive/hive.dart';
-import 'package:market_manager/utilities.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +45,7 @@ class MarketManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Market Manager',
       theme: themes.lightTheme,
       darkTheme: themes.darkTheme,

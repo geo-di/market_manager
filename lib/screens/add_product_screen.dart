@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:market_manager/components/rounded_button.dart';
 import 'package:market_manager/constants.dart';
 import 'package:market_manager/components/numeric_input_field.dart';
 import 'package:market_manager/utilities.dart';
@@ -140,10 +141,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 border: Border.all(color: Theme.of(context).textTheme.bodySmall!.color!),
                 borderRadius: BorderRadius.circular(32),
               ),
-              child: Text(
-                barcode != null ? 'Product with barcode $barcode is being updated' : 'No barcode',
-                style: kSubtitleTextDecoration,
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  barcode != null ? 'Product with barcode $barcode is being updated' : 'No barcode',
+                  style: kSubtitleTextDecoration,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
 
@@ -153,7 +157,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               label: 'Quantity',
               isInt: true,
               initialValue: quantity,
-              onChanged: (value) => quantity = int.tryParse(value!),
+              onChanged: (value) => quantity = int.tryParse(value),
               validator: (value) => value!.isEmpty ? 'Enter quantity' : null,
             ),
 
@@ -261,7 +265,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
 
 
-            ElevatedButton(
+            RoundedButton(
+              title: 'Update Product Stock',
+              color: Theme.of(context).colorScheme.primary,
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
@@ -328,17 +334,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 }
               },
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                    Theme.of(context).appBarTheme.backgroundColor
-                ),
-              ),
-              child: Text(
-                'Update Product Stock',
-                style: TextStyle(
-                    color: kAppWhite
-                ),
-              ),
+
+
             ),
           ],
         ),
@@ -362,10 +359,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   border: Border.all(color: Theme.of(context).textTheme.bodySmall!.color!),
                   borderRadius: BorderRadius.circular(32),
                 ),
-                child: Text(
-                  barcode != null ? 'Product with barcode $barcode is being added first time' : 'No barcode',
-                  style: kSubtitleTextDecoration,
-                  textAlign: TextAlign.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    barcode != null ? 'Product with barcode $barcode is being added first time' : 'No barcode',
+                    style: kSubtitleTextDecoration,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
 
@@ -387,7 +387,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 label: 'Quantity',
                 isInt: true,
                 initialValue: quantity,
-                onChanged: (value) => quantity = int.tryParse(value!),
+                onChanged: (value) => quantity = int.tryParse(value),
                 validator: (value) => value!.isEmpty ? 'Enter quantity' : null,
               ),
 
@@ -429,7 +429,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 label: 'Price',
                 isInt: false,
                 validator: (value) => value!.isEmpty ? 'Enter price' : null,
-                onChanged: (value) => price = double.tryParse(value!),
+                onChanged: (value) => price = double.tryParse(value),
               ),
 
               const SizedBox(height: 16),
@@ -493,7 +493,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
 
 
-              ElevatedButton(
+              RoundedButton(
+                title: 'Update Product Stock',
+                color: Theme.of(context).colorScheme.primary,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -548,17 +550,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     }
                   }
                 },
-                style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                        Theme.of(context).appBarTheme.backgroundColor
-                    ),
-                ),
-                child: Text(
-                  'Add Product',
-                  style: TextStyle(
-                    color: kAppWhite
-                  ),
-                ),
               ),
             ],
           ),

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +12,6 @@ import 'package:market_manager/components/history_price_card.dart';
 import 'package:market_manager/components/reusable_card.dart';
 import 'package:market_manager/constants.dart';
 import 'package:market_manager/models/history_entry.dart';
-import 'package:market_manager/screens/add_product_screen.dart';
 import 'package:market_manager/utilities.dart';
 
 

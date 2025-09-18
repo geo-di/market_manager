@@ -53,7 +53,6 @@ class _MenuScreenState extends State<MenuScreen> {
   void dispose() {
     super.dispose();
 
-    //TODO move this to _showBackDialog
     _auth.signOut();
     Hive.box('session').clear();
   }
@@ -70,7 +69,20 @@ class _MenuScreenState extends State<MenuScreen> {
   Future<bool?> _showBackDialog() {
     return showDialog<bool>(
       context: context,
-      builder: (BuildContext context) => ExitAlert(),
+      builder: (BuildContext context) => ReusableDialog(
+        title: 'Are you sure?',
+        content: const Text('Are you sure you want to leave this page?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Nevermind'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -88,7 +100,6 @@ class _MenuScreenState extends State<MenuScreen> {
         }
       },
       child: Scaffold(
-        //TODO add functionality on settings
         appBar: AppBar(
           title: Text('Hello ${loggedInUser.displayName}!'),
           actions: [
@@ -120,7 +131,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           child: Container(
                             margin: EdgeInsets.all(15),
                             child: Text(
-                              '${Provider.of<TaskData>(context).taskCount} tasks left!',
+                              '${Provider.of<TaskData>(context).taskCount} ${Provider.of<TaskData>(context).taskCount == 1 ? 'task' : 'tasks'} left!',
                               style: kSubtitleTextDecoration.copyWith(
                                 color: kAppWhite,
                               ),

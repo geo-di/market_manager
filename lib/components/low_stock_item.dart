@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:market_manager/components/reusable_card.dart';
 import 'package:market_manager/screens/show_product_screen.dart';
-import 'package:market_manager/screens/show_stock_screen.dart';
 
 class LowStockItem extends StatelessWidget {
   LowStockItem({required this.barcode, required this.name, required this.quantity});

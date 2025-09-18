@@ -62,6 +62,7 @@ class Util {
       return {
         'uid': doc.id,
         'name': doc.data()['name'],
+        'vat': doc.data()['vat'],
       };
     }).toList();
 
@@ -136,41 +137,6 @@ class Util {
   }
 
 
-  static Future<void> bulkAddHistory({
-    required String storeId,
-    required String barcode,
-    required List<Map<String, dynamic>> historyEntries,
-  }) async {
-    final firestore = FirebaseFirestore.instance;
-    WriteBatch batch = firestore.batch();
-    const int batchSize = 500;
-    int count = 0;
-
-    for (var entry in historyEntries) {
-      final docRef = firestore
-          .collection('stores')
-          .doc(storeId)
-          .collection('products')
-          .doc(barcode)
-          .collection('history')
-          .doc(); // auto-generated ID
-      batch.set(docRef, entry);
-      count++;
-
-      // Commit every 500 writes
-      if (count % batchSize == 0) {
-        await batch.commit();
-        batch = firestore.batch();
-      }
-    }
-
-    // Commit remaining
-    if (count % batchSize != 0) {
-      await batch.commit();
-    }
-
-    print('✅ Added $count history entries.');
-  }
 
 
 }

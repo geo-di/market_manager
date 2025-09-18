@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:market_manager/components/task_list.dart';
 import 'package:market_manager/constants.dart';
-import 'package:market_manager/models/task.dart';
 import 'package:market_manager/models/task_data.dart';
 import 'package:market_manager/screens/add_task_screen.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +20,6 @@ class ShowTasksScreen extends StatelessWidget {
             color: kAppWhite,
           ),
         onPressed: () {
-          final taskData = Provider.of<TaskData>(context, listen: false);
-
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,

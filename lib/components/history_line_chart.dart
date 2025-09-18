@@ -24,7 +24,7 @@ class _HistoryLineChartState extends State<HistoryLineChart> {
   Color get chartColor {
     return Theme.of(context).brightness == Brightness.dark
         ? kLightAppBarBackground
-        : kPrimaryDarkColor;
+        : kLightAppBarBackground;
   }
 
 

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +6,6 @@ import 'package:hive/hive.dart';
 import 'package:market_manager/components/low_stock_item.dart';
 import 'package:market_manager/utilities.dart';
 
-import 'chat_screen.dart';
 
 final _firestore = FirebaseFirestore.instance;
 late User loggedInUser;
